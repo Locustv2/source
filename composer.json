@@ -1,0 +1,34 @@
+{
+    "name": "locustv2/source",
+    "description": "Source codes to some usefull php codes",
+    "keywords": ["php", "source", "code"],
+    "homepage": "https://github.com/locustv2/source",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Yuv Joodhisty",
+            "email": "locustv2@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/Locustv2/source/issues?state=open",
+        "wiki": "https://github.com/Locustv2/source/wiki",
+        "source": "https://github.com/Locustv2/source"
+    },
+    "require": {
+        "php": "^7.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "source\\" : "code"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
