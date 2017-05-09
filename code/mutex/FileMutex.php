@@ -1,36 +1,29 @@
 <?php
+/**
+ * @link https://github.com/Locustv2/source
+ * @copyright Copyright (c) 2017 locustv2
+ * @license https://github.com/Locustv2/source/blob/master/LICENSE.md
+ * @author Yuv Joodhisty <locustv2@gmail.com>
+ */
 
 namespace source\mutex;
 
+/**
+ * FileMutex if the implementation of mutex using file locking mechanism.
+ * When a resource needs to be locked, a temporary file will be created and
+ * locked using php `flock` function.
+ */
 class FileMutex extends Mutex
 {
+    /**
+     * @var array the list of currently opened and locked files to keep track
+     * of locked resources.
+     */
     protected $openedFiles = [];
 
-    protected function acquireLockxxx($resourceId, int $timeout = 0): bool
-    {
-        $file = fopen($this->getLockFilePath($resourceId), 'w+');
-        if ($file === false) {
-            return false;
-        }
-
-        chmod($this->getLockFilePath($resourceId), 0755);
-
-        $waitTime = 0;
-        while (!flock($file, LOCK_EX | LOCK_NB)) {
-            sleep(1);
-            $waitTime++;
-            if ($waitTime > $timeout) {
-                fclose($file);
-
-                return false;
-            }
-        }
-
-        $this->openedFiles[$resourceId] = $file;
-
-        return true;
-    }
-
+    /**
+     * @inheritdoc
+     */
     protected function acquireLock($resourceId, int $timeout = 0): bool
     {
         $waitTime = 0;
@@ -58,6 +51,9 @@ class FileMutex extends Mutex
         return true;
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function releaseLock($resourceId): bool
     {
         if (!isset($this->openedFiles[$resourceId]) || !flock($this->openedFiles[$resourceId], LOCK_UN)) {
@@ -71,7 +67,12 @@ class FileMutex extends Mutex
         return true;
     }
 
-    protected function getLockFilePath($name): string
+    /**
+     * Generates and returns the file path that will be used for the locking.
+     * @param string $resourceId the resourceId that will be locked
+     * @return string the path of the filed created for the locking.
+     */
+    protected function getLockFilePath($resourceId): string
     {
         $path = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'runtime/mutex';
         if (!is_dir($path) && !mkdir($path, 0775, true)) {
@@ -80,6 +81,6 @@ class FileMutex extends Mutex
 
         chmod(dirname($path), 0755);
 
-        return $path . DIRECTORY_SEPARATOR . md5($name) . '.lock';
+        return $path . DIRECTORY_SEPARATOR . md5($resourceId) . '.lock';
     }
 }
